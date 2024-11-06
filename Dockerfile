@@ -5,13 +5,7 @@ FROM osrm/osrm-backend:latest
 WORKDIR /app
 
 # Install required tools
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    git \
-    wget \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt install wget
 
 # Download the full planet .osm.pbf file (Global data)
 RUN wget https://download.geofabrik.de/planet-latest.osm.pbf -O /app/planet.osm.pbf
