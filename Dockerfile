@@ -1,8 +1,7 @@
 FROM osrm/osrm-backend:latest
+FROM curlimages/curl:latest
 
-
-
-# Download the global planet .osm.pbf file using curl (replace with correct URL if needed)
+# Download the global planet .osm.pbf file using curl
 RUN curl -L https://download.geofabrik.de/planet-latest.osm.pbf -o /app/planet.osm.pbf
 
 # Extract map data using OSRM tools
