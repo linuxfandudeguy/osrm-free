@@ -1,29 +1,19 @@
-# Use the official OSRM Docker image as base
 FROM osrm/osrm-backend:latest
 
-# Set the working directory
-WORKDIR /app
 
-# Install required tools
-RUN apt install wget
 
-# Download the full planet .osm.pbf file (Global data)
-RUN wget https://download.geofabrik.de/planet-latest.osm.pbf -O /app/planet.osm.pbf
+# Download the global planet .osm.pbf file using curl (replace with correct URL if needed)
+RUN curl -L https://download.geofabrik.de/planet-latest.osm.pbf -o /app/planet.osm.pbf
 
-# Download the necessary OSRM profile for routing (Car routing profile in this case)
-RUN wget https://raw.githubusercontent.com/Project-OSRM/osrm-backend/master/profiles/car.lua -O /app/car.lua
+# Extract map data using OSRM tools
+RUN osrm-extract /app/planet.osm.pbf -p /opt/osrm-backend/profiles/car.lua
 
-# Process the .osm.pbf file with OSRM
-RUN osrm-extract -p /app/car.lua /app/planet.osm.pbf
-
-# Partition the OSRM data for routing
+# Prepare the data for routing
 RUN osrm-partition /app/planet.osrm
-
-# Customize the OSRM data (optional step for customizations)
 RUN osrm-customize /app/planet.osrm
 
-# Expose the routing port
+# Expose the necessary port
 EXPOSE 5000
 
-# Run the OSRM service
-CMD ["osrm-routed", "/app/planet.osrm"]
+# Start the OSRM backend
+CMD ["osrm-routed", "--algorithm", "CH", "/app/planet.osrm"]
